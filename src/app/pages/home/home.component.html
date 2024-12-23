@@ -4,24 +4,25 @@
 <div class="home">
   <mat-card appearance="outlined">
     <mat-card-header>
-      <mat-card-subtitle><strong>{{item?.name}}</strong></mat-card-subtitle>
+      <mat-card-subtitle><strong>{{item.name}}</strong></mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
       <div class="info">
         <mat-form-field appearance="outline">
           <mat-label>SKU</mat-label>
-          <input matInput placeholder="Placeholder" [value]="item?.sku" readonly>
+          <input matInput placeholder="Placeholder" [value]="item.sku" readonly>
           <mat-icon matSuffix>menu</mat-icon>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>EAN</mat-label>
-          <input matInput placeholder="Placeholder" [value]="item?.ean" readonly>
+          <input matInput placeholder="Placeholder" [value]="item.ean" readonly>
           <mat-icon matSuffix class="material-symbols-outlined">barcode</mat-icon>
         </mat-form-field>
       </div>
       <mat-divider></mat-divider>
-      @for(inventory of item?.inventory;track inventory){
+      @if(item){
+      @for(inventory of item.inventory;track inventory){
       <div class="inventory">
         <div class="location">
           <mat-chip-set>
@@ -56,6 +57,7 @@
         </div>
       </div>
       <mat-divider></mat-divider>
+      }
       }
       <div class="add-inventory">
         <button mat-raised-button class="addInventoryBtn" (click)="openAddInventory()">Add Inventory</button>

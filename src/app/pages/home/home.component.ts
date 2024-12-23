@@ -15,6 +15,7 @@ import { take } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UpdateQtyComponent } from '../../components/update-qty/update-qty.component';
 import { StateService } from '../../services/state.service';
+import { AddInventoryComponent } from '../../components/add-inventory/add-inventory.component';
 
 @Component({
   selector: 'app-home',
@@ -114,6 +115,10 @@ export class HomeComponent implements OnInit {
   }
 
   openAddInventory() {
+    this.dialog.open(AddInventoryComponent, {
+      width: '98%',
+      data: this.item
+    });
   }
 
   chipIcon(name: string): { icon: string, color: string } {
