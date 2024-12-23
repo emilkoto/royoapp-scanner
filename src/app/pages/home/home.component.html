@@ -1,0 +1,63 @@
+@if(!item){
+<p style="padding-left: 16px;">Start scanning to see the inventory</p>
+}@else{
+<div class="home">
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-subtitle><strong>{{item?.name}}</strong></mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="info">
+        <mat-form-field appearance="outline">
+          <mat-label>SKU</mat-label>
+          <input matInput placeholder="Placeholder" [value]="item?.sku" readonly>
+          <mat-icon matSuffix>menu</mat-icon>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>EAN</mat-label>
+          <input matInput placeholder="Placeholder" [value]="item?.ean" readonly>
+          <mat-icon matSuffix class="material-symbols-outlined">barcode</mat-icon>
+        </mat-form-field>
+      </div>
+      <mat-divider></mat-divider>
+      @for(inventory of item?.inventory;track inventory){
+      <div class="inventory">
+        <div class="location">
+          <mat-chip-set>
+            @for(location of inventory.tree;track location){
+            <mat-chip [classList]="chipIcon(location.name).color">
+              <span class="chip-label">{{location.name}}</span>
+            </mat-chip>
+            }
+          </mat-chip-set>
+        </div>
+        <div class="actions">
+          <div class="left">
+            <button mat-mini-fab color="accent" matPrefix (click)="decrementQty(inventory)">
+              <mat-icon class="material-symbols-outlined">exposure_neg_1</mat-icon>
+            </button>
+            <div class="quantity">
+              <mat-icon class="material-symbols-outlined">inventory</mat-icon>
+              <span>{{inventory.quantity}}</span>
+            </div>
+            <button mat-mini-fab matPrefix extended (click)="incrementQty(inventory)">
+              <mat-icon class="material-symbols-outlined">exposure_plus_1</mat-icon>
+            </button>
+          </div>
+          <div class="right">
+            <button mat-mini-fab matPrefix extended (click)="openUpdateQty(inventory)">
+              <mat-icon class="material-symbols-outlined">read_more</mat-icon>
+            </button>
+            <button mat-mini-fab matPrefix extended class="deleteBtn" (click)="deleteInventory(inventory)">
+              <mat-icon class="material-symbols-outlined">delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
+}

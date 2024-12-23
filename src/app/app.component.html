@@ -1,2 +1,14 @@
-<!-- <router-outlet /> -->
-<button mat-raised-button (click)="startScan()" class="mt-4">Scan Now</button>
+<div class="scanner-app">
+  @if(user$ | async){
+  <div class="header">
+    <app-header></app-header>
+  </div>
+  }
+  <div class="content" [ngClass]="{'no-padding': (user$ | async) === null}">
+    <router-outlet />
+  </div>
+
+  <div class="footer">
+    <app-footer></app-footer>
+  </div>
+</div>

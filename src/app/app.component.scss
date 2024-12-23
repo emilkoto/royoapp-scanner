@@ -1,0 +1,39 @@
+.scanner-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+
+
+
+  .header {
+    width: 100%;
+    z-index: 999;
+    height: 56px;
+  }
+
+  .content {
+    flex: 1;
+    overflow-y: auto;
+
+    &.no-padding {
+      margin-top: 0;
+    }
+  }
+
+  .footer {
+    height: 56px;
+    width: 100%;
+    z-index: 999;
+  }
+}
+
+::ng-deep {
+  .footer {
+
+    .mat-toolbar-row,
+    .mat-toolbar-single-row {
+      justify-content: center;
+    }
+  }
+}
