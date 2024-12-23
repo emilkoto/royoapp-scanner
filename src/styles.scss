@@ -14,4 +14,16 @@ body {
   @include mat.toolbar-overrides((container-background-color: #0c2c48,
       container-text-color: white,
     ));
+
+  :root {
+    @include mat.progress-bar-overrides((active-indicator-color: orange,
+        track-color: red,
+      ));
+  }
+}
+
+.footer {
+  @include mat.toolbar-overrides((container-background-color: #e6e6e6,
+      container-text-color: black,
+    ));
 }

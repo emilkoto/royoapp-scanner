@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -14,6 +14,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { take } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UpdateQtyComponent } from '../../components/update-qty/update-qty.component';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-home',
@@ -34,8 +35,9 @@ import { UpdateQtyComponent } from '../../components/update-qty/update-qty.compo
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   readonly _inventoryService = inject(InventoryService);
+  readonly _stateService = inject(StateService);
   readonly _snackBar = inject(MatSnackBar);
   readonly dialog = inject(MatDialog);
 
@@ -43,6 +45,15 @@ export class HomeComponent {
   defaultEan = '98723645q7644';
 
   item: InventoryItem | null = null;
+
+  ngOnInit(): void {
+    this._stateService.scanning.subscribe({
+      next: (value) => {
+        if (value)
+          this.scan();
+      }
+    })
+  }
 
   scan() {
     this._inventoryService.searchByEan(this.defaultEan).subscribe({
@@ -100,6 +111,9 @@ export class HomeComponent {
       width: '250px',
       data: inventory
     });
+  }
+
+  openAddInventory() {
   }
 
   chipIcon(name: string): { icon: string, color: string } {
