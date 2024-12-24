@@ -6,6 +6,7 @@ import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-footer',
+  standalone: true,
   imports: [
     MatToolbarModule,
     MatIconModule,
