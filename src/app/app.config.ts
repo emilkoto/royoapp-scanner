@@ -36,8 +36,8 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
     }),
     catchError((error) => {
       console.error('Token validation failed:', error);
-      _authService.clean();
-      router.navigate(['/login']);
+      // _authService.clean();
+      // router.navigate(['/login']);
       return throwError(() => error);
     })
   );

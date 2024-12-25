@@ -16,6 +16,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UpdateQtyComponent } from '../../components/update-qty/update-qty.component';
 import { StateService } from '../../services/state.service';
 import { AddInventoryComponent } from '../../components/add-inventory/add-inventory.component';
+import { CapacitorBarcodeScanner, CapacitorBarcodeScannerCameraDirection, CapacitorBarcodeScannerOptions, CapacitorBarcodeScannerScanOrientation, CapacitorBarcodeScannerScanResult, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner';
 
 @Component({
   selector: 'app-home',
@@ -51,7 +52,9 @@ export class HomeComponent implements OnInit {
     this._stateService.scanning.subscribe({
       next: (value) => {
         if (value)
-          this.scan(this.defaultEan);
+          this.startScan();
+        // this.scan(this.defaultEan);
+        // this.scan(this.defaultEan);
       }
     })
   }
@@ -63,6 +66,23 @@ export class HomeComponent implements OnInit {
         this.item.inventory.sort((a, b) => b.quantity - a.quantity);
       },
       error: (error) => console.error(error)
+    });
+  }
+
+  async startScan() {
+    const options: CapacitorBarcodeScannerOptions = {
+      cameraDirection: CapacitorBarcodeScannerCameraDirection.BACK,
+      scanOrientation: CapacitorBarcodeScannerScanOrientation.PORTRAIT,
+      hint: CapacitorBarcodeScannerTypeHint.ALL,
+      scanButton: false,
+      scanText: 'Please scan the barcode'
+    }
+
+    CapacitorBarcodeScanner.scanBarcode(options).then((result: CapacitorBarcodeScannerScanResult) => {
+      console.log(result);
+      this.scan(result.ScanResult);
+    }).catch((error) => {
+      console.log(error);
     });
   }
 
@@ -123,7 +143,7 @@ export class HomeComponent implements OnInit {
     });
     this.dialog.afterAllClosed.subscribe({
       next: () => {
-        this.scan(this.defaultEan);
+        this.scan(this.item?.ean || '');
       }
     })
   }
