@@ -51,13 +51,13 @@ export class HomeComponent implements OnInit {
     this._stateService.scanning.subscribe({
       next: (value) => {
         if (value)
-          this.scan();
+          this.scan(this.defaultEan);
       }
     })
   }
 
-  scan() {
-    this._inventoryService.searchByEan(this.defaultEan).subscribe({
+  scan(ean: string) {
+    this._inventoryService.searchByEan(ean).subscribe({
       next: (item) => {
         this.item = item;
         this.item.inventory.sort((a, b) => b.quantity - a.quantity);
@@ -117,8 +117,15 @@ export class HomeComponent implements OnInit {
   openAddInventory() {
     this.dialog.open(AddInventoryComponent, {
       width: '98%',
+      height: '600px',
+      maxHeight: '98%',
       data: this.item
     });
+    this.dialog.afterAllClosed.subscribe({
+      next: () => {
+        this.scan(this.defaultEan);
+      }
+    })
   }
 
   chipIcon(name: string): { icon: string, color: string } {

@@ -55,9 +55,16 @@ export class AuthService {
     );
   }
 
-  me = () => this._httpClient.post<User>(this.apiUrl + '/auth/me', {}, {
-    headers: {
-      Authorization: `Bearer ${this.accessToken}`
+  me = () => {
+    const lastCheck = localStorage.getItem('lastCheck');
+    if (lastCheck && Date.now() - parseInt(lastCheck) < 60000) {
+      return of(this.user);
     }
-  })
+    localStorage.setItem('lastCheck', Date.now().toString());
+    return this._httpClient.post<User>(this.apiUrl + '/auth/me', {}, {
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`
+      }
+    })
+  }
 }
