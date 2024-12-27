@@ -8,6 +8,7 @@ import { StateService } from '../../services/state.service';
 import { AsyncPipe } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-header',
@@ -30,6 +31,7 @@ export class HeaderComponent {
   readonly router = inject(Router);
   showLoading$ = this._stateService.loading;
 
+  isIos = Capacitor.getPlatform() === 'ios';
 
   logout() {
     this._authService.clean();

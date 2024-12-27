@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'royoapp-scanner',
   webDir: 'dist/royoapp-scanner/browser',
   server: {
-    url: "http://192.168.1.149:4200",
+    url: "http://192.168.1.136:4200",
     cleartext: true
   },
 };

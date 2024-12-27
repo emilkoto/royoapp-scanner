@@ -1,5 +1,8 @@
 @if(!item){
 <p style="padding-left: 16px;">Start scanning to see the inventory</p>
+@if(errorMessage.length > 0){
+<p style="padding-left: 16px; color: red;">{{errorMessage}}</p>
+}
 }@else{
 <div class="home">
   <mat-card appearance="outlined">

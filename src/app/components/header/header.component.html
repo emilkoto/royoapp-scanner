@@ -1,3 +1,6 @@
+@if(isIos){
+  <div class="iosMargin"></div>
+}
 @if(showLoading$ | async){
 <mat-progress-bar mode="indeterminate" style="position: absolute; z-index: 999"></mat-progress-bar>
 }

@@ -59,13 +59,18 @@ export class HomeComponent implements OnInit {
     })
   }
 
+  errorMessage = '';
+
   scan(ean: string) {
     this._inventoryService.searchByEan(ean).subscribe({
       next: (item) => {
         this.item = item;
         this.item.inventory.sort((a, b) => b.quantity - a.quantity);
       },
-      error: (error) => console.error(error)
+      error: (error) => {
+        this.errorMessage = 'Item not found!';
+        this._stateService.setLoading(false);
+      }
     });
   }
 
@@ -74,8 +79,9 @@ export class HomeComponent implements OnInit {
       cameraDirection: CapacitorBarcodeScannerCameraDirection.BACK,
       scanOrientation: CapacitorBarcodeScannerScanOrientation.PORTRAIT,
       hint: CapacitorBarcodeScannerTypeHint.ALL,
-      scanButton: false,
-      scanText: 'Please scan the barcode'
+      scanButton: true,
+      scanText: 'Scan',
+      scanInstructions: 'Please scan the barcode'
     }
 
     CapacitorBarcodeScanner.scanBarcode(options).then((result: CapacitorBarcodeScannerScanResult) => {

@@ -31,8 +31,10 @@ export class LoginComponent {
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)])
   });
+  showErrorMessage = false;
 
   onSubmit() {
+    this.showErrorMessage = false;
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
       this.authService.signIn(email ?? '', password ?? '').subscribe({
@@ -42,6 +44,7 @@ export class LoginComponent {
         },
         error: (error) => {
           console.error(error);
+          this.showErrorMessage = true;
         }
       });
     }
