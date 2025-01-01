@@ -17,7 +17,7 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   const token = _authService.accessToken;
   _stateService.setLoading(true);
 
-  if (req.url.includes('auth/login') || req.url.includes('auth/me')) {
+  if (req.url.includes('auth/login') || req.url.includes('auth/me') || req.url.includes('auth/request-password-reset')) {
     return next(req);
   }
 
