@@ -20,7 +20,7 @@
   </mat-form-field>
 </div>
 @if(!item){
-<p style="padding-left: 16px;">Start scanning to see the inventory</p>
+<p style="padding-left: 16px;">Press Scan Button to Check Inventory</p>
 @if(errorMessage.length > 0){
 <p style="padding-left: 16px; color: red;">{{errorMessage}}</p>
 }
@@ -85,6 +85,9 @@
       }
       <div class="add-inventory">
         <button mat-raised-button class="addInventoryBtn" (click)="openAddInventory()">Add Inventory</button>
+      </div>
+      <div class="add-inventory">
+        <button mat-raised-button class="closeBtn" (click)="close()">Close</button>
       </div>
     </mat-card-content>
   </mat-card>

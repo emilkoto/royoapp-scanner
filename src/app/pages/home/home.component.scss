@@ -17,6 +17,7 @@
 
 .home {
   padding: 5px;
+  margin-top: 10px;
 
   .scan-container {
     width: 100%;
@@ -152,6 +153,20 @@
 
 
     background: #0c2c48;
+    color: white
+  }
+
+  .closeBtn{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin-top: 15px;
+
+
+    background: #7c7c7c;
     color: white
   }
 }

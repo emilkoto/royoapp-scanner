@@ -3,6 +3,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { HomeComponent } from './pages/home/home.component';
 import { inject } from '@angular/core';
 import { AuthService } from './services/auth.service';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 
 const AuthGuard: CanActivateFn = () => {
   const _authSercvice = inject(AuthService);
@@ -27,5 +28,6 @@ const LoginAuthGuard: CanActivateFn = () => {
 export const routes: Routes = [
   { path: '', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent, canActivate: [LoginAuthGuard] },
+  { path: 'reset-password', component: ResetPasswordComponent, canActivate: [LoginAuthGuard] },
   { path: '**', redirectTo: '' }
 ];

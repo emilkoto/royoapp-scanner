@@ -64,7 +64,7 @@ export class HomeComponent implements OnInit {
   );
 
 
-  defaultEan = '98723645q7644';
+  defaultEan = '6932586200052';
 
   item: InventoryItem | null = null;
 
@@ -99,6 +99,13 @@ export class HomeComponent implements OnInit {
         }
       }
     });
+
+    this._stateService.test.subscribe({
+      next: (value) => {
+        if (value)
+          this.scan(this.defaultEan);
+      }
+    })
   }
 
   search(s: string) {
@@ -224,5 +231,9 @@ export class HomeComponent implements OnInit {
       return { icon: 'swap_horiz', color: 'position' };
     }
     return { icon: 'location_on', color: '' };
+  }
+
+  close() {
+    this.item = null;
   }
 }

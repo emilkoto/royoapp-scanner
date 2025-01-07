@@ -7,9 +7,11 @@ import { BehaviorSubject } from 'rxjs';
 export class StateService {
 
   private scanningHandler = new BehaviorSubject<Date | null>(null);
+  private testHandler = new BehaviorSubject<Date | null>(null);
   private loadingHandler = new BehaviorSubject<boolean>(false);
 
   startScanning = () => this.scanningHandler.next(new Date());
+  testScanning = () => this.testHandler.next(new Date());
   setLoading = (loading: boolean) => this.loadingHandler.next(loading);
 
   get scanning() {
@@ -18,6 +20,10 @@ export class StateService {
 
   get loading() {
     return this.loadingHandler.asObservable();
+  }
+
+  get test() {
+    return this.testHandler.asObservable();
   }
 
 }

@@ -7,9 +7,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../services/auth.service';
 import { Router, RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-reset-password',
   standalone: true,
   imports: [
     CommonModule,
@@ -18,34 +19,34 @@ import { Router, RouterModule } from '@angular/router';
     MatFormFieldModule,
     MatButtonModule,
     MatInputModule,
-    RouterModule
+    RouterModule,
+    MatIconModule
   ],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  templateUrl: './reset-password.component.html',
+  styleUrl: './reset-password.component.scss'
 })
-export class LoginComponent {
-
+export class ResetPasswordComponent {
   authService = inject(AuthService);
   router = inject(Router);
 
   loginForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required, Validators.minLength(6)])
+    email: new FormControl('', [Validators.required, Validators.email])
   });
   showErrorMessage = false;
+  showSuccessMessage = false;
 
   onSubmit() {
     this.showErrorMessage = false;
     if (this.loginForm.valid) {
-      const { email, password } = this.loginForm.value;
-      this.authService.signIn(email ?? '', password ?? '').subscribe({
+      const { email } = this.loginForm.value;
+      this.authService.requestPasswordReset(email ?? '').subscribe({
         next: () => {
-          this.router.navigate(['/home']);
-          console.log('Logged in');
+          this.showSuccessMessage = true;
+          this.showErrorMessage = false;
         },
         error: (error) => {
-          console.error(error);
           this.showErrorMessage = true;
+          this.showSuccessMessage = false;
         }
       });
     }

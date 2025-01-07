@@ -21,4 +21,7 @@ export class FooterComponent {
 
 
   startScanning = () => this._stateService.startScanning();
+  test = () => this._stateService.testScanning();
+
+
 }
