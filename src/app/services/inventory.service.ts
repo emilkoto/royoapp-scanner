@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { InventoryDetail, InventoryItem } from '../types/inventory.type';
+import { InventoryDetail, InventoryItem, InventoryPagination } from '../types/inventory.type';
 import { AuthService } from './auth.service';
-import { tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { StateService } from './state.service';
 
 @Injectable({
@@ -32,6 +32,18 @@ export class InventoryService {
   deteleItemInventory = (itemId: number, inventoryId: number) => this._httpClient.delete<{ message: string }>(`${this.apiUrl}/items/${itemId}/inventory/${inventoryId}`).pipe(tap(() => {
     this._stateService.setLoading(false);
   }));
+
+  search = (page: number, pageSize: number, orderBy: string, order: string, search?: string, location?: number): Observable<InventoryPagination> => {
+    let url = `${this.apiUrl}/items?page=${page}&pageSize=${pageSize}&orderBy=${orderBy}&order=${order}`;
+
+    if (search) url += `&search=${search}`;
+    if (location) url += `&location=${location}`;
+
+    return this._httpClient.get<InventoryPagination>(url).pipe(tap(() => {
+      this._stateService.setLoading(false);
+    }));
+  }
+
 
 
 

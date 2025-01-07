@@ -1,6 +1,6 @@
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
@@ -8,14 +8,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { InventoryService } from '../../services/inventory.service';
-import { InventoryDetail, InventoryItem } from '../../types/inventory.type';
+import { InventoryDetail, InventoryItem, InventoryPagination } from '../../types/inventory.type';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { take } from 'rxjs';
+import { BehaviorSubject, debounceTime, take } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UpdateQtyComponent } from '../../components/update-qty/update-qty.component';
 import { StateService } from '../../services/state.service';
 import { AddInventoryComponent } from '../../components/add-inventory/add-inventory.component';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { CapacitorBarcodeScanner, CapacitorBarcodeScannerCameraDirection, CapacitorBarcodeScannerOptions, CapacitorBarcodeScannerScanOrientation, CapacitorBarcodeScannerScanResult, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner';
 
 @Component({
@@ -32,7 +33,9 @@ import { CapacitorBarcodeScanner, CapacitorBarcodeScannerCameraDirection, Capaci
     MatIconModule,
     MatChipsModule,
     MatSnackBarModule,
-    MatDialogModule
+    MatDialogModule,
+    MatAutocompleteModule,
+    AsyncPipe
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
@@ -42,6 +45,23 @@ export class HomeComponent implements OnInit {
   readonly _stateService = inject(StateService);
   readonly _snackBar = inject(MatSnackBar);
   readonly dialog = inject(MatDialog);
+
+  searchInputControl = new FormControl<string>('', [Validators.required]);
+  filteredOptions$: BehaviorSubject<InventoryPagination> = new BehaviorSubject<InventoryPagination>(
+    {
+      current_page: 1,
+      data: [],
+      first_page_url: '',
+      from: 0,
+      last_page: 1,
+      last_page_url: '',
+      next_page_url: '',
+      per_page: 10,
+      prev_page_url: '',
+      to: 0,
+      total: 0
+    }
+  );
 
 
   defaultEan = '98723645q7644';
@@ -57,6 +77,45 @@ export class HomeComponent implements OnInit {
         // this.scan(this.defaultEan);
       }
     })
+
+    this.searchInputControl.valueChanges.pipe(debounceTime(500)).subscribe({
+      next: (value) => {
+        if (value && value.length > 3) {
+          this.search(value);
+        } else {
+          this.filteredOptions$.next({
+            current_page: 1,
+            data: [],
+            first_page_url: '',
+            from: 0,
+            last_page: 1,
+            last_page_url: '',
+            next_page_url: '',
+            per_page: 10,
+            prev_page_url: '',
+            to: 0,
+            total: 0
+          });
+        }
+      }
+    });
+  }
+
+  search(s: string) {
+    this._inventoryService.search(1, 10, 'name', 'asc', s).subscribe({
+      next: (data) => {
+        this.filteredOptions$.next(data);
+      }
+    });
+  }
+
+  displayOption(option: InventoryItem): string {
+    return option ? `${option.name} | ${option.sku} | ${option.description?.substring(0, 15)}` : '';
+  }
+
+  optionSelected(option: MatAutocompleteSelectedEvent) {
+    this.item = option.option.value as InventoryItem;
+    this.item.inventory.sort((a, b) => b.quantity - a.quantity);
   }
 
   errorMessage = '';

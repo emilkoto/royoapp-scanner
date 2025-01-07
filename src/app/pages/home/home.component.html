@@ -1,3 +1,24 @@
+<div class="search-inventory">
+  <mat-form-field appearance="outline">
+    <mat-label>Search Inventory</mat-label>
+    <input matInput placeholder="Name | SKU | EAN" [formControl]="searchInputControl" [matAutocomplete]="auto">
+    <mat-icon matSuffix>search</mat-icon>
+    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayOption" (optionSelected)="optionSelected($event)">
+      @if(filteredOptions$ | async; as filteredOptions){
+      @if(filteredOptions.data.length > 0){
+      @for (option of filteredOptions.data; track option) {
+      <mat-option [value]="option">
+        <div>
+          <strong>{{option.name}}</strong><br />
+          <small><span>{{option.sku}}</span> | <span>{{option.description?.substring(0, 50)}}</span></small>
+        </div>
+      </mat-option>
+      }
+      }
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+</div>
 @if(!item){
 <p style="padding-left: 16px;">Start scanning to see the inventory</p>
 @if(errorMessage.length > 0){
