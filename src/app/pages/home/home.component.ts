@@ -46,7 +46,7 @@ export class HomeComponent implements OnInit {
   readonly _snackBar = inject(MatSnackBar);
   readonly dialog = inject(MatDialog);
 
-  searchInputControl = new FormControl<string>('', [Validators.required]);
+  searchInputControl = new FormControl<string>('');
   filteredOptions$: BehaviorSubject<InventoryPagination> = new BehaviorSubject<InventoryPagination>(
     {
       current_page: 1,
@@ -123,6 +123,22 @@ export class HomeComponent implements OnInit {
   optionSelected(option: MatAutocompleteSelectedEvent) {
     this.item = option.option.value as InventoryItem;
     this.item.inventory.sort((a, b) => b.quantity - a.quantity);
+    // clear search
+    this.filteredOptions$.next({
+      current_page: 1,
+      data: [],
+      first_page_url: '',
+      from: 0,
+      last_page: 1,
+      last_page_url: '',
+      next_page_url: '',
+      per_page: 10,
+      prev_page_url: '',
+      to: 0,
+      total: 0
+    });
+
+    this.searchInputControl.setValue('', { emitEvent: false });
   }
 
   errorMessage = '';

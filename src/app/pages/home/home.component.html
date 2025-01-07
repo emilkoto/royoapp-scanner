@@ -1,7 +1,10 @@
+@if(!item){
+<p style="padding-left: 16px;">Press Scan Button to Check Inventory</p>
+<p style="padding-left: 16px;">Or</p>
 <div class="search-inventory">
   <mat-form-field appearance="outline">
     <mat-label>Search Inventory</mat-label>
-    <input matInput placeholder="Name | SKU | EAN" [formControl]="searchInputControl" [matAutocomplete]="auto">
+    <input type="search" matInput placeholder="Name | SKU | EAN" [formControl]="searchInputControl" [matAutocomplete]="auto">
     <mat-icon matSuffix>search</mat-icon>
     <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayOption" (optionSelected)="optionSelected($event)">
       @if(filteredOptions$ | async; as filteredOptions){
@@ -19,8 +22,6 @@
     </mat-autocomplete>
   </mat-form-field>
 </div>
-@if(!item){
-<p style="padding-left: 16px;">Press Scan Button to Check Inventory</p>
 @if(errorMessage.length > 0){
 <p style="padding-left: 16px; color: red;">{{errorMessage}}</p>
 }

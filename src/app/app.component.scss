@@ -9,7 +9,7 @@
   .header {
     width: 100%;
     z-index: 999;
-    height: 100px;
+    height: 80px;
   }
 
   .content {
@@ -22,7 +22,7 @@
   }
 
   .footer {
-    height: 56px;
+    height: 80px;
     width: 100%;
     z-index: 999;
   }
@@ -30,6 +30,9 @@
 
 ::ng-deep {
   .footer {
+    .mat-toolbar{
+      height: 80px;
+    }
 
     .mat-toolbar-row,
     .mat-toolbar-single-row {
