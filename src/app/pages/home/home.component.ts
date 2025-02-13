@@ -121,8 +121,14 @@ export class HomeComponent implements OnInit {
   }
 
   optionSelected(option: MatAutocompleteSelectedEvent) {
-    this.item = option.option.value as InventoryItem;
-    this.item.inventory.sort((a, b) => b.quantity - a.quantity);
+    this._inventoryService.itemInventory(option.option.value.id).subscribe({
+      next: (item) => {
+        this.item = item;
+        this.item.inventory.sort((a, b) => b.quantity - a.quantity);
+      }
+    });
+
+
     // clear search
     this.filteredOptions$.next({
       current_page: 1,
@@ -231,22 +237,15 @@ export class HomeComponent implements OnInit {
     });
     this.dialog.afterAllClosed.subscribe({
       next: () => {
-        this.scan(this.item?.ean || '');
+        if (this.item)
+          this._inventoryService.itemInventory(this.item?.id).subscribe({
+            next: (item) => {
+              this.item = item;
+              this.item.inventory.sort((a, b) => b.quantity - a.quantity);
+            }
+          });
       }
     })
-  }
-
-  chipIcon(name: string): { icon: string, color: string } {
-    if (name.toLowerCase().includes('rack')) {
-      return { icon: 'dns', color: 'rack' };
-    } else if (name.toLowerCase().includes('bin')) {
-      return { icon: 'archive', color: 'bin' };
-    } else if (name.toLowerCase().includes('level')) {
-      return { icon: 'linear_scale', color: 'level' };
-    } else if (name.toLowerCase().includes('left') || name.toLowerCase().includes('right')) {
-      return { icon: 'swap_horiz', color: 'position' };
-    }
-    return { icon: 'location_on', color: '' };
   }
 
   close() {

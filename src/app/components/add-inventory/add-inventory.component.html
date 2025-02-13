@@ -3,7 +3,7 @@
   <div class="path">
     <mat-chip-set>
       @for(location of selectedPath;track location){
-      <mat-chip [classList]="chipIcon(location.name).color">
+      <mat-chip [style.backgroundColor]="location.color">
         <span class="chip-label">{{location.name}}</span>
       </mat-chip>
       }

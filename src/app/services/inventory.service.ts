@@ -17,6 +17,10 @@ export class InventoryService {
   readonly _stateService = inject(StateService);
 
 
+  itemInventory = (itemId: number): Observable<InventoryItem> => this._httpClient.get<InventoryItem>(`${this.apiUrl}/items/${itemId}/inventory`).pipe(tap(() => {
+    this._stateService.setLoading(false);
+  }));
+
   searchByEan = (ean: string) => this._httpClient.get<InventoryItem>(`${this.apiUrl}/items/searchByEan?ean=${ean}`).pipe(tap(() => {
     this._stateService.setLoading(false);
   }));

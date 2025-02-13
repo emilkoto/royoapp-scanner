@@ -52,7 +52,7 @@
         <div class="location">
           <mat-chip-set>
             @for(location of inventory.tree;track location){
-            <mat-chip [classList]="chipIcon(location.name).color">
+            <mat-chip [style.backgroundColor]="location.display_color">
               <span class="chip-label">{{location.name}}</span>
             </mat-chip>
             }
