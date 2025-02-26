@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">royoapp-scanner</string>
-    <string name="title_activity_main">royoapp-scanner</string>
+    <string name="app_name">Royo Scanner</string>
+    <string name="title_activity_main">Royo Scanner</string>
     <string name="package_name">com.royousa.scanner</string>
     <string name="custom_url_scheme">com.royousa.scanner</string>
 </resources>
