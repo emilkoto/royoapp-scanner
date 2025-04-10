@@ -17,9 +17,29 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   const token = _authService.accessToken;
   _stateService.setLoading(true);
 
-  if (req.url.includes('auth/login') || req.url.includes('auth/me') || req.url.includes('auth/request-password-reset')) {
+
+
+  if (req.url.includes('auth/login') || req.url.includes('auth/me') || req.url.includes('auth/refresh') || req.url.includes('auth/request-password-reset')) {
     return next(req);
   }
+
+  if (_authService.isTokenAboutToExpire()) {
+    return _authService.refreshToken().pipe(
+      switchMap(() => {
+        const authReq = req.clone({
+          headers: req.headers.set('Authorization', `Bearer ${token}`)
+        })
+        return next(authReq);
+      }),
+      catchError((error) => {
+        _authService.clean();
+        router.navigate(['/login']);
+        return throwError(() => new Error('Unauthorized'));
+      }
+      ));
+
+  }
+
 
   return _authService.me().pipe(
     switchMap((user) => {

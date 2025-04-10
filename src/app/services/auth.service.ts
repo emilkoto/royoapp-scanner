@@ -5,6 +5,37 @@ import { environment } from '../../environments/environment';
 import { User } from '../types/auth.type';
 import { StateService } from './state.service';
 
+const JWTParser = (token: string) => {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+  return JSON.parse(jsonPayload);
+};
+const isTokenExpired = (token: string) => {
+  const decodedToken = JWTParser(token);
+  const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
+  const currentTime = Date.now();
+  return currentTime > expirationTime;
+};
+const isTokenValid = (token: string) => {
+  const decodedToken = JWTParser(token);
+  const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
+  const currentTime = Date.now();
+  return currentTime < expirationTime;
+};
+const isTokenAboutToExpire = (token: string) => {
+  const decodedToken = JWTParser(token);
+  const expirationTime = decodedToken.exp; // Convert to milliseconds
+  const currentTime = Date.now();
+  const nowEpoh = Math.floor(currentTime / 1000);
+  const timeLeft = expirationTime - nowEpoh; // Time left in seconds
+  const threshold = 60 * 60; // 24 hours in seconds
+  // const threshold = 200; // 24 hours in seconds
+  return timeLeft < threshold;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -74,5 +105,32 @@ export class AuthService {
 
   passwordResetWithToken(token: string, password: string, password_confirmation: string): Observable<any> {
     return this._httpClient.post(this.apiUrl + '/auth/password-reset', { token, password, password_confirmation });
+  }
+
+  refreshToken(): Observable<any> {
+    return this._httpClient.post(this.apiUrl + '/auth/refresh', {}, {
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`
+      }
+    }).pipe(
+      switchMap((response: any) => {
+        this.accessToken = response.access_token;
+        this.accessToken = response.access_token;
+        return this.me();
+      })
+    );
+  }
+
+  isTokenAboutToExpire(): boolean {
+    const token = this.accessToken;
+    return isTokenAboutToExpire(token);
+  }
+  isTokenExpired(): boolean {
+    const token = this.accessToken;
+    return isTokenExpired(token);
+  }
+  isTokenValid(): boolean {
+    const token = this.accessToken;
+    return isTokenValid(token);
   }
 }
