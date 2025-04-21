@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.royousa.scanner',
+  appId: 'com.royousa.scanner2',
   appName: 'Royo Scanner',
   webDir: 'dist/royoapp-scanner/browser',
   // server: {

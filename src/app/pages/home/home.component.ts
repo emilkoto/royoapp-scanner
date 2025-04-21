@@ -184,8 +184,14 @@ export class HomeComponent implements OnInit {
   scan(ean: string) {
     this._inventoryService.searchByEan(ean).subscribe({
       next: (item) => {
-        this.item = item;
-        this.item.inventory.sort((a, b) => b.quantity - a.quantity);
+        // this.item = item;
+        // this.item.inventory.sort((a, b) => b.quantity - a.quantity);
+        if (item && item.id)
+          this._inventoryService.itemInventory(item.id).subscribe({
+            next: (item) => {
+              this.processItem(item);
+            }
+          });
       },
       error: (error) => {
         this.errorMessage = 'Item not found!';
@@ -259,8 +265,14 @@ export class HomeComponent implements OnInit {
     if (!confirm('Are you sure you want to delete this inventory?')) return;
     this._inventoryService.deteleItemInventory(inventory.itemId, inventory.id).subscribe({
       next: () => {
-        this.item?.inventory.splice(this.item?.inventory.indexOf(inventory), 1);
-        this._snackBar.open('Inventory deleted!', 'save', { duration: 1000 });
+        // this.item?.inventory.splice(this.item?.inventory.indexOf(inventory), 1);
+        if (this.item && this.item.id)
+          this._inventoryService.itemInventory(this.item?.id).subscribe({
+            next: (item) => {
+              this.processItem(item);
+              this._snackBar.open('Inventory deleted!', 'save', { duration: 1000 });
+            }
+          });
       },
       error: () => {
         this._snackBar.open('Error deleting inventory!', 'error', { duration: 2000 });
