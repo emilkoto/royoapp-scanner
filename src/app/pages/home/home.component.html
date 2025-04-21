@@ -4,9 +4,11 @@
 <div class="search-inventory">
   <mat-form-field appearance="outline">
     <mat-label>Search Inventory</mat-label>
-    <input type="search" matInput placeholder="Name | SKU | EAN" [formControl]="searchInputControl" [matAutocomplete]="auto">
+    <input type="search" matInput placeholder="Name | SKU | EAN" [formControl]="searchInputControl"
+      [matAutocomplete]="auto">
     <mat-icon matSuffix>search</mat-icon>
-    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayOption" (optionSelected)="optionSelected($event)">
+    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayOption"
+      (optionSelected)="optionSelected($event)">
       @if(filteredOptions$ | async; as filteredOptions){
       @if(filteredOptions.data.length > 0){
       @for (option of filteredOptions.data; track option) {
@@ -46,43 +48,92 @@
         </mat-form-field>
       </div>
       <mat-divider></mat-divider>
-      @if(item){
-      @for(inventory of item.inventory;track inventory){
-      <div class="inventory">
-        <div class="location">
-          <mat-chip-set>
-            @for(location of inventory.tree;track location){
-            <mat-chip [style.backgroundColor]="location.display_color">
-              <span class="chip-label">{{location.name}}</span>
-            </mat-chip>
-            }
-          </mat-chip-set>
-        </div>
-        <div class="actions">
-          <div class="left">
-            <button mat-mini-fab color="accent" matPrefix (click)="decrementQty(inventory)">
-              <mat-icon class="material-symbols-outlined">exposure_neg_1</mat-icon>
-            </button>
-            <div class="quantity">
-              <mat-icon class="material-symbols-outlined">inventory</mat-icon>
-              <span>{{inventory.quantity}}</span>
+      @if(item$ | async; as item){
+      <mat-tab-group>
+        <mat-tab label="Inventory">
+          @for(inventory of item.inventory;track inventory){
+          @if(inventoryFromArray(inventory.id); as inventoryForm){
+          <div class="inventory" [formGroup]="inventoryForm">
+            <div class="location">
+              <mat-chip-set>
+                @for(location of inventory.tree;track location){
+                <mat-chip [style.backgroundColor]="location.display_color">
+                  <span class="chip-label">{{location.name}}</span>
+                </mat-chip>
+                }
+              </mat-chip-set>
             </div>
-            <button mat-mini-fab matPrefix extended (click)="incrementQty(inventory)">
-              <mat-icon class="material-symbols-outlined">exposure_plus_1</mat-icon>
-            </button>
+            <div class="actions">
+              <div class="left">
+                <div class="quantity">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Quantity</mat-label>
+                    <input matInput placeholder="Placeholder" formControlName="quantity" type="number"
+                      inputmode="numeric" />
+                  </mat-form-field>
+                </div>
+                <button mat-raised-button matSuffix extended (click)="saveQty(inventory)">
+                  Save
+                  <mat-icon class="material-symbols-outlined">save</mat-icon>
+                </button>
+              </div>
+              <div class="right">
+                <button mat-mini-fab matPrefix extended class="deleteBtn" (click)="deleteInventory(inventory)">
+                  <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                </button>
+                <button mat-mini-fab matPrefix extended (click)="openMoveInventory(inventory)">
+                  <mat-icon class="material-symbols-outlined">move</mat-icon>
+                </button>
+              </div>
+            </div>
           </div>
-          <div class="right">
-            <button mat-mini-fab matPrefix extended (click)="openUpdateQty(inventory)">
-              <mat-icon class="material-symbols-outlined">read_more</mat-icon>
-            </button>
-            <button mat-mini-fab matPrefix extended class="deleteBtn" (click)="deleteInventory(inventory)">
-              <mat-icon class="material-symbols-outlined">delete</mat-icon>
-            </button>
-          </div>
-        </div>
-      </div>
-      <mat-divider></mat-divider>
-      }
+          <mat-divider></mat-divider>
+          }
+          }
+        </mat-tab>
+        <mat-tab label="History">
+          @for(history of (item.history); track history){
+          <mat-card appearance="outlined" style="margin-top: 15px;">
+            <mat-card-content>
+              <div>
+                <mat-chip-set>
+                  @for(location of history.tree;track location){
+                  <mat-chip [ngStyle]="{'background-color': location.display_color}">
+                    <strong>{{location.name}}</strong>
+                  </mat-chip>
+                  }
+                </mat-chip-set>
+                <table class="width: 100%">
+                  <tr>
+                    <th style="width: 120px; text-align: left;">Action</th>
+                    <th style="width: 120px; text-align: right; font-weight: bold; padding-right: 5px">Old Qty</th>
+                    <th style="width: 120px; text-align: right; font-weight: bold; padding-right: 5px">New Qty</th>
+                  </tr>
+                  <tr>
+                    <td style="text-align: left; font-weight: bold;">{{history.action}}</td>
+                    <td style="text-align: right; font-weight: bold; padding-right: 5px">{{history.oldQty}}</td>
+                    <td style="text-align: right; font-weight: bold; padding-right: 5px">{{history.newQty}}</td>
+                  </tr>
+                </table>
+                <div style="display: flex;
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    align-content: flex-start;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-top: 15px;">
+                  <div>{{history.created_at | date: 'dd/MM/yyyy HH:mm'}}</div>
+                  <div>{{history.user.name}}</div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          }
+          @if(item.history?.length == 0){
+          <div style="text-align: center;">No history found</div>
+          }
+        </mat-tab>
+      </mat-tab-group>
       }
       <div class="add-inventory">
         <button mat-raised-button class="addInventoryBtn" (click)="openAddInventory()">Add Inventory</button>

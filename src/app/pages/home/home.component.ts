@@ -1,6 +1,6 @@
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
@@ -18,6 +18,8 @@ import { StateService } from '../../services/state.service';
 import { AddInventoryComponent } from '../../components/add-inventory/add-inventory.component';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { CapacitorBarcodeScanner, CapacitorBarcodeScannerCameraDirection, CapacitorBarcodeScannerOptions, CapacitorBarcodeScannerScanOrientation, CapacitorBarcodeScannerScanResult, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MoveInventoryComponent } from '../../components/move-inventory/move-inventory.component';
 
 @Component({
   selector: 'app-home',
@@ -35,7 +37,8 @@ import { CapacitorBarcodeScanner, CapacitorBarcodeScannerCameraDirection, Capaci
     MatSnackBarModule,
     MatDialogModule,
     MatAutocompleteModule,
-    AsyncPipe
+    AsyncPipe,
+    MatTabsModule
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
@@ -67,6 +70,10 @@ export class HomeComponent implements OnInit {
   defaultEan = '6932586200052';
 
   item: InventoryItem | null = null;
+
+  inventoryForm = new FormArray<any>([]);
+
+  item$ = new BehaviorSubject<InventoryItem | null>(null);
 
   ngOnInit(): void {
     this._stateService.scanning.subscribe({
@@ -123,8 +130,7 @@ export class HomeComponent implements OnInit {
   optionSelected(option: MatAutocompleteSelectedEvent) {
     this._inventoryService.itemInventory(option.option.value.id).subscribe({
       next: (item) => {
-        this.item = item;
-        this.item.inventory.sort((a, b) => b.quantity - a.quantity);
+        this.processItem(item);
       }
     });
 
@@ -145,6 +151,32 @@ export class HomeComponent implements OnInit {
     });
 
     this.searchInputControl.setValue('', { emitEvent: false });
+  }
+
+  inventoryFromArray(id: number): FormGroup | null {
+    const index = this.inventoryForm.controls.findIndex((form) => {
+      return form.get('id')?.value === id;
+    }
+    );
+    if (index !== -1) {
+      return this.inventoryForm.at(index) as FormGroup;
+    }
+    return null
+  }
+
+  private processItem(item: InventoryItem) {
+    this.item = item;
+    this.item.inventory.sort((a, b) => b.quantity - a.quantity);
+    this.inventoryForm.clear();
+    this.item$.next(this.item);
+    for (let inventory of this.item.inventory) {
+      const form = new FormGroup({
+        id: new FormControl(inventory.id),
+        itemId: new FormControl(inventory.itemId),
+        quantity: new FormControl(inventory.quantity, [Validators.required])
+      });
+      this.inventoryForm.push(form);
+    }
   }
 
   errorMessage = '';
@@ -208,6 +240,21 @@ export class HomeComponent implements OnInit {
       });
   }
 
+  saveQty(inventory: InventoryDetail) {
+    const inventoryGroup = this.inventoryFromArray(inventory.id);
+    if (!inventoryGroup) return;
+    const data = inventoryGroup.value;
+    this._inventoryService.updateItemInventory(data.itemId, data.id, data
+      .quantity).pipe(take(1)).subscribe({
+        next: () => {
+          this._snackBar.open('Quantity updated!', 'save', { duration: 1000 });
+        },
+        error: () => {
+          this._snackBar.open('Error updating quantity!', 'error', { duration: 2000 });
+        }
+      });
+  }
+
   deleteInventory(inventory: InventoryDetail) {
     if (!confirm('Are you sure you want to delete this inventory?')) return;
     this._inventoryService.deteleItemInventory(inventory.itemId, inventory.id).subscribe({
@@ -240,8 +287,29 @@ export class HomeComponent implements OnInit {
         if (this.item)
           this._inventoryService.itemInventory(this.item?.id).subscribe({
             next: (item) => {
-              this.item = item;
-              this.item.inventory.sort((a, b) => b.quantity - a.quantity);
+              this.processItem(item);
+            }
+          });
+      }
+    })
+  }
+
+  openMoveInventory(inventory: InventoryDetail) {
+    this.dialog.open(MoveInventoryComponent, {
+      width: '98%',
+      height: '600px',
+      maxHeight: '98%',
+      data: {
+        item: this.item,
+        inventory: inventory
+      }
+    });
+    this.dialog.afterAllClosed.subscribe({
+      next: () => {
+        if (this.item)
+          this._inventoryService.itemInventory(this.item?.id).subscribe({
+            next: (item) => {
+              this.processItem(item);
             }
           });
       }

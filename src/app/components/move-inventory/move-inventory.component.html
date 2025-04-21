@@ -1,0 +1,41 @@
+<h2 mat-dialog-title><strong>move to...</strong></h2>
+<mat-dialog-content>
+  <div class="path">
+    <mat-chip-set>
+      @for(location of selectedPath;track location){
+      <mat-chip [style.backgroundColor]="location.color">
+        <span class="chip-label">{{location.name}}</span>
+      </mat-chip>
+      }
+    </mat-chip-set>
+  </div>
+  <div>
+    @if(loading){
+    <div class="add-loading">
+      <mat-spinner [diameter]="30"></mat-spinner>
+    </div>
+    }
+    <!-- @if(currentLocations.length === 0 && selectedPath.length > 0 && !loading){ -->
+    <div class="add-quantity">
+      <div class="quantity">
+        <mat-form-field appearance="outline">
+          <mat-label>Quantity</mat-label>
+          <input matInput type="number" inputmode="numeric" [formControl]="qtyControl"
+            [max]="inventory.inventory.quantity" min="1">
+        </mat-form-field>
+      </div>
+    </div>
+    <!-- } -->
+    @if(currentLocations){
+    <div class="buttons">
+      @for(location of currentLocations; track location){
+      <button mat-fab extended (click)="selectLocation(location)">{{location.name}}</button>
+      }
+    </div>
+    }
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button (click)="close()">Close</button>
+  <button mat-raised-button class="saveBtn" (click)="save()">Save</button>
+</mat-dialog-actions>
