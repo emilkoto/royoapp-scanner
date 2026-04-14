@@ -17,9 +17,10 @@ import { UpdateQtyComponent } from '../../components/update-qty/update-qty.compo
 import { StateService } from '../../services/state.service';
 import { AddInventoryComponent } from '../../components/add-inventory/add-inventory.component';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { CapacitorBarcodeScanner, CapacitorBarcodeScannerCameraDirection, CapacitorBarcodeScannerOptions, CapacitorBarcodeScannerScanOrientation, CapacitorBarcodeScannerScanResult, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MoveInventoryComponent } from '../../components/move-inventory/move-inventory.component';
+import { WebScannerComponent } from '../../components/web-scanner/web-scanner.component';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-home',
@@ -207,21 +208,37 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   async startScan() {
-    const options: CapacitorBarcodeScannerOptions = {
-      cameraDirection: CapacitorBarcodeScannerCameraDirection.BACK,
-      scanOrientation: CapacitorBarcodeScannerScanOrientation.PORTRAIT,
-      hint: CapacitorBarcodeScannerTypeHint.ALL,
-      scanButton: true,
-      scanText: 'Scan',
-      scanInstructions: 'Please scan the barcode'
+    if (Capacitor.isNativePlatform()) {
+      // Native: use Capacitor barcode scanner
+      const { CapacitorBarcodeScanner, CapacitorBarcodeScannerCameraDirection, CapacitorBarcodeScannerScanOrientation, CapacitorBarcodeScannerTypeHint } = await import('@capacitor/barcode-scanner');
+      const options = {
+        cameraDirection: CapacitorBarcodeScannerCameraDirection.BACK,
+        scanOrientation: CapacitorBarcodeScannerScanOrientation.PORTRAIT,
+        hint: CapacitorBarcodeScannerTypeHint.ALL,
+        scanButton: true,
+        scanText: 'Scan',
+        scanInstructions: 'Please scan the barcode'
+      };
+      try {
+        const result = await CapacitorBarcodeScanner.scanBarcode(options);
+        this.scan(result.ScanResult);
+      } catch (error) {
+        console.error('Native scan error:', error);
+      }
+    } else {
+      // Web: use html5-qrcode via dialog
+      const dialogRef = this.dialog.open(WebScannerComponent, {
+        width: '98%',
+        maxWidth: '500px',
+        height: '500px',
+        maxHeight: '98%',
+      });
+      dialogRef.afterClosed().subscribe((result: string | null) => {
+        if (result) {
+          this.scan(result);
+        }
+      });
     }
-
-    CapacitorBarcodeScanner.scanBarcode(options).then((result: CapacitorBarcodeScannerScanResult) => {
-      console.log(result);
-      this.scan(result.ScanResult);
-    }).catch((error) => {
-      console.log(error);
-    });
   }
 
   incrementQty(inventory: InventoryDetail) {
