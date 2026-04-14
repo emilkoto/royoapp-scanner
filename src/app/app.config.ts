@@ -27,7 +27,7 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
     return _authService.refreshToken().pipe(
       switchMap(() => {
         const authReq = req.clone({
-          headers: req.headers.set('Authorization', `Bearer ${token}`)
+          headers: req.headers.set('Authorization', `Bearer ${_authService.accessToken}`)
         })
         return next(authReq);
       }),
@@ -56,8 +56,6 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
     }),
     catchError((error) => {
       console.error('Token validation failed:', error);
-      // _authService.clean();
-      // router.navigate(['/login']);
       return throwError(() => error);
     })
   );

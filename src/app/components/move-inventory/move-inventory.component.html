@@ -15,7 +15,7 @@
       <mat-spinner [diameter]="30"></mat-spinner>
     </div>
     }
-    <!-- @if(currentLocations.length === 0 && selectedPath.length > 0 && !loading){ -->
+    @if(currentLocations.length === 0 && selectedPath.length > 0 && !loading){
     <div class="add-quantity">
       <div class="quantity">
         <mat-form-field appearance="outline">
@@ -25,7 +25,7 @@
         </mat-form-field>
       </div>
     </div>
-    <!-- } -->
+    }
     @if(currentLocations){
     <div class="buttons">
       @for(location of currentLocations; track location){

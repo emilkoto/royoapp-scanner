@@ -1,5 +1,5 @@
 import { AsyncPipe, CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -11,7 +11,7 @@ import { InventoryService } from '../../services/inventory.service';
 import { InventoryDetail, InventoryItem, InventoryPagination } from '../../types/inventory.type';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { BehaviorSubject, debounceTime, take } from 'rxjs';
+import { BehaviorSubject, debounceTime, Subject, take, takeUntil } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UpdateQtyComponent } from '../../components/update-qty/update-qty.component';
 import { StateService } from '../../services/state.service';
@@ -43,7 +43,7 @@ import { MoveInventoryComponent } from '../../components/move-inventory/move-inv
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   readonly _inventoryService = inject(InventoryService);
   readonly _stateService = inject(StateService);
   readonly _snackBar = inject(MatSnackBar);
@@ -75,17 +75,22 @@ export class HomeComponent implements OnInit {
 
   item$ = new BehaviorSubject<InventoryItem | null>(null);
 
+  private _destroy$ = new Subject<void>();
+
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
+  }
+
   ngOnInit(): void {
-    this._stateService.scanning.subscribe({
+    this._stateService.scanning.pipe(takeUntil(this._destroy$)).subscribe({
       next: (value) => {
         if (value)
           this.startScan();
-        // this.scan(this.defaultEan);
-        // this.scan(this.defaultEan);
       }
     })
 
-    this.searchInputControl.valueChanges.pipe(debounceTime(500)).subscribe({
+    this.searchInputControl.valueChanges.pipe(debounceTime(500), takeUntil(this._destroy$)).subscribe({
       next: (value) => {
         if (value && value.length > 0) {
           this.search(value);
@@ -107,7 +112,7 @@ export class HomeComponent implements OnInit {
       }
     });
 
-    this._stateService.test.subscribe({
+    this._stateService.test.pipe(takeUntil(this._destroy$)).subscribe({
       next: (value) => {
         if (value)
           this.scan(this.defaultEan);

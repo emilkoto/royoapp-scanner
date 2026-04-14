@@ -30,13 +30,12 @@ export class UpdateQtyComponent implements OnInit {
   qtyControl = new FormControl(0, [Validators.required, Validators.min(0)]);
 
   ngOnInit(): void {
-    console.log(this.inventory);
     this.qtyControl.setValue(this.inventory.quantity);
   }
 
   save() {
     this.inventory.quantity = this.qtyControl.value ?? 0;
-    this._inventoryService.updateItemInventory(this.inventory.itemId, this.inventory.id, this.inventory.quantity)
+    this._inventoryService.updateItemInventory(this.inventory.itemId, this.inventory.id, this.inventory.quantity, this.inventory.defective)
       .subscribe({
         next: () => {
           this.dialogRef.close(this.inventory);

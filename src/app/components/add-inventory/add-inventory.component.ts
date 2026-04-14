@@ -99,9 +99,9 @@ export class AddInventoryComponent implements OnInit {
     }
     if (this.qtyControl.value == 1) {
       this.qtyControl.setValue(1);
-    } else[
-      this.qtyControl.setValue(this.qtyControl.value - 1)
-    ]
+    } else {
+      this.qtyControl.setValue(this.qtyControl.value - 1);
+    }
   }
 
   save() {

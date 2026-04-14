@@ -95,8 +95,9 @@ export class MoveInventoryComponent {
     const inventoryId = this.inventory.inventory.id;
     this.loading = true;
     const removeQty = this.inventory.inventory.quantity - qty;
-    await lastValueFrom(this._inventoryService.updateItemInventory(itemId, inventoryId, removeQty));
-    const result = await lastValueFrom(this._inventoryService.createItemInventory(itemId, qty, locationId));
+    const defective = this.inventory.inventory.defective ?? 0;
+    await lastValueFrom(this._inventoryService.updateItemInventory(itemId, inventoryId, removeQty, defective));
+    const result = await lastValueFrom(this._inventoryService.createItemInventory(itemId, qty, locationId, 0));
     this.loading = false;
     this._snackBar.open('Inventory moved successfully', 'OK', {
       duration: 2000,

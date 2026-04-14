@@ -115,7 +115,6 @@ export class AuthService {
     }).pipe(
       switchMap((response: any) => {
         this.accessToken = response.access_token;
-        this.accessToken = response.access_token;
         return this.me();
       })
     );
