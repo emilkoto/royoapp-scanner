@@ -25,11 +25,11 @@ export class InventoryService {
     this._stateService.setLoading(false);
   }));
 
-  createItemInventory = (itemId: number, quantity: number, locationId: number) => this._httpClient.post<InventoryDetail>(`${this.apiUrl}/items/${itemId}/inventory`, { locationId, quantity }).pipe(tap(() => {
+  createItemInventory = (itemId: number, quantity: number, locationId: number, defective: number = 0) => this._httpClient.post<InventoryDetail>(`${this.apiUrl}/items/${itemId}/inventory`, { locationId, quantity, defective }).pipe(tap(() => {
     this._stateService.setLoading(false);
   }));
 
-  updateItemInventory = (itemId: number, inventoryId: number, quantity: number) => this._httpClient.put<InventoryDetail>(`${this.apiUrl}/items/${itemId}/inventory/${inventoryId}`, { quantity }).pipe(tap(() => {
+  updateItemInventory = (itemId: number, inventoryId: number, quantity: number, defective?: number) => this._httpClient.put<InventoryDetail>(`${this.apiUrl}/items/${itemId}/inventory/${inventoryId}`, { quantity, defective }).pipe(tap(() => {
     this._stateService.setLoading(false);
   }));
 

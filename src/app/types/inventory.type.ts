@@ -17,6 +17,7 @@ export interface InventoryDetail {
   id: number,
   itemId: number,
   quantity: number,
+  defective: number,
   tree: Location[]
 }
 

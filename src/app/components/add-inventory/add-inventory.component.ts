@@ -43,6 +43,7 @@ export class AddInventoryComponent implements OnInit {
   selectedPath: Location[] = [];
   currentLocations: Location[] = [];
   qtyControl = new FormControl<number>(1, [Validators.required, Validators.min(1)]);
+  defectiveControl = new FormControl<number>(0, [Validators.min(0)]);
 
   ngOnInit(): void {
     this.loading = true;
@@ -106,8 +107,9 @@ export class AddInventoryComponent implements OnInit {
   save() {
     const lastLocation = this.selectedPath[this.selectedPath.length - 1];
     const qty = this.qtyControl.value as number;
+    const defective = this.defectiveControl.value ?? 0;
     this.loading = true;
-    this._inventoryService.createItemInventory(this.inventory.id, qty, lastLocation.id).subscribe((result) => {
+    this._inventoryService.createItemInventory(this.inventory.id, qty, lastLocation.id, defective).subscribe((result) => {
       this.loading = false;
       this._snackBar.open('Inventory added', 'close', { duration: 2000 });
       this.dialogRef.close(result);

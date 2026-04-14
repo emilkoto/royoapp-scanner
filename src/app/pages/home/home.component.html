@@ -64,26 +64,33 @@
               </mat-chip-set>
             </div>
             <div class="actions">
-              <div class="left">
+              <div class="fields">
                 <div class="quantity">
                   <mat-form-field appearance="outline">
-                    <mat-label>Quantity</mat-label>
-                    <input matInput placeholder="Placeholder" formControlName="quantity" type="number"
-                      inputmode="numeric" />
+                    <mat-label>Qty</mat-label>
+                    <input matInput formControlName="quantity" type="number" inputmode="numeric" />
                   </mat-form-field>
                 </div>
-                <button mat-raised-button matSuffix extended (click)="saveQty(inventory)">
+                <div class="quantity">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Defective</mat-label>
+                    <input matInput formControlName="defective" type="number" inputmode="numeric" style="color: #ef4444;" />
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="buttons">
+                <button mat-raised-button (click)="saveQty(inventory)">
                   Save
                   <mat-icon class="material-symbols-outlined">save</mat-icon>
                 </button>
-              </div>
-              <div class="right">
-                <button mat-mini-fab matPrefix extended class="deleteBtn" (click)="deleteInventory(inventory)">
-                  <mat-icon class="material-symbols-outlined">delete</mat-icon>
-                </button>
-                <button mat-mini-fab matPrefix extended (click)="openMoveInventory(inventory)">
-                  <mat-icon class="material-symbols-outlined">move</mat-icon>
-                </button>
+                <div style="display: flex; gap: 5px;">
+                  <button mat-mini-fab class="deleteBtn" (click)="deleteInventory(inventory)">
+                    <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                  </button>
+                  <button mat-mini-fab (click)="openMoveInventory(inventory)">
+                    <mat-icon class="material-symbols-outlined">move</mat-icon>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

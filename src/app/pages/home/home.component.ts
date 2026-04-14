@@ -87,7 +87,7 @@ export class HomeComponent implements OnInit {
 
     this.searchInputControl.valueChanges.pipe(debounceTime(500)).subscribe({
       next: (value) => {
-        if (value && value.length > 3) {
+        if (value && value.length > 0) {
           this.search(value);
         } else {
           this.filteredOptions$.next({
@@ -173,7 +173,8 @@ export class HomeComponent implements OnInit {
       const form = new FormGroup({
         id: new FormControl(inventory.id),
         itemId: new FormControl(inventory.itemId),
-        quantity: new FormControl(inventory.quantity, [Validators.required])
+        quantity: new FormControl(inventory.quantity, [Validators.required]),
+        defective: new FormControl(inventory.defective ?? 0)
       });
       this.inventoryForm.push(form);
     }
@@ -220,7 +221,7 @@ export class HomeComponent implements OnInit {
 
   incrementQty(inventory: InventoryDetail) {
     inventory.quantity++;
-    this._inventoryService.updateItemInventory(inventory.itemId, inventory.id, inventory.quantity)
+    this._inventoryService.updateItemInventory(inventory.itemId, inventory.id, inventory.quantity, inventory.defective)
       .pipe(take(1))
       .subscribe({
         next: () => {
@@ -234,7 +235,7 @@ export class HomeComponent implements OnInit {
 
   decrementQty(inventory: InventoryDetail) {
     inventory.quantity--;
-    this._inventoryService.updateItemInventory(inventory.itemId, inventory.id, inventory.quantity)
+    this._inventoryService.updateItemInventory(inventory.itemId, inventory.id, inventory.quantity, inventory.defective)
       .pipe(take(1))
       .subscribe({
         next: () => {
@@ -251,7 +252,7 @@ export class HomeComponent implements OnInit {
     if (!inventoryGroup) return;
     const data = inventoryGroup.value;
     this._inventoryService.updateItemInventory(data.itemId, data.id, data
-      .quantity).pipe(take(1)).subscribe({
+      .quantity, data.defective).pipe(take(1)).subscribe({
         next: () => {
           this._snackBar.open('Quantity updated!', 'save', { duration: 1000 });
         },

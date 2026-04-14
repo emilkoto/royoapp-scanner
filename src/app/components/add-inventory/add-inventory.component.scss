@@ -77,3 +77,12 @@
   background: #0c2c48;
   color: white;
 }
+
+.defective-row {
+  width: 100%;
+  margin-top: 5px;
+
+  mat-form-field {
+    width: 100%;
+  }
+}

@@ -37,6 +37,12 @@
         <mat-icon class="material-symbols-outlined">exposure_plus_1</mat-icon>
       </button>
     </div>
+    <div class="defective-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Defective</mat-label>
+        <input matInput type="number" [formControl]="defectiveControl" style="color: #ef4444;">
+      </mat-form-field>
+    </div>
     }
   </div>
 </mat-dialog-content>
